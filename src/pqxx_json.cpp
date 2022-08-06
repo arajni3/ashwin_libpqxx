@@ -38,3 +38,4 @@ void pqxx::to_json(json& result_json, pqxx::row& res_row) {
 
 void pqxx::to_json(json& result_json, pqxx::row&& res_row) {
     pqxx::to_json(result_json, res_row);
+}
