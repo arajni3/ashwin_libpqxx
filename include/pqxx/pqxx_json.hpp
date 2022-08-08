@@ -28,7 +28,7 @@ void higher_order_tuple_func(std::tuple<types...>& tup, int row_index, json& tr_
     };
     
     /* recursively call column_callback on each column using the comma operator inside parentheses,
-    * where the columns comprise col_args, to which the tuple tup is mapped to by rvalue in std::apply below
+    * where the columns comprise col_args, to which the tuple tup is mapped by rvalue in std::apply below
     */
     auto tr_base_json_callback = [](const types&&... col_args) {
         (column_callback(col_args), ...);
