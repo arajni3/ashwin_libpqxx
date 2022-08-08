@@ -18,17 +18,20 @@
 
 using json = nlohmann::json;
 
-int cur_row_index = -1;
-
-json& json_to_use;
-
 template <typename... types>
-void tuple_callback(const types&... col_args) {
+void higher_order_tuple_func(std::tuple<types...>& tup, int row_index, json& tr_base_json) {
     int column_index = 0;
-    auto tr_base_json_callback = [&column_index](const auto& elem) {
-            json_to_use["data"][cur_row_index][column_index++] = elem;
+    
+    // capture column_index by reference so that it is changed (in this case, incremented) each time column_callback is called
+    auto column_callback = [&column_index](const auto& elem) {
+        tr_base_json["data"][cur_row_index][column_index++] = elem;
     };
-    (tr_base_json_callback(col_args), ...);
+    
+    // recursively call column_callback on each column, where the columns comprise col_args, to which the tuple tup is mapped to by rvalue in std::apply below
+    auto tr_base_json_callback = [](const types&&... col_args) {
+        (column_callback(col_args), ...);
+    }
+    std::apply(tr_base_json_callback, tup);
 }
 
 namespace pqxx { 
@@ -40,14 +43,12 @@ namespace pqxx {
 
     template <typename ...types>
     // to_json for the return value of a pqxx::work::query(); the return value is an iterator to
-    // the underlying result set, which is composed of a number of std::tuples<types...>
+    // the underlying result set, which is composed of a number of std::tuple<types...>s
     void to_json(json& tr_base_json, pqxx::internal::result_iteration<types...>& iter_result) {
-        json_to_use = tr_base_json;
+        int cur_row_index = 0;
         for (auto it = iter_result.begin(); it != iter_result.end(); ++it) {
-            cur_row_index++;
-            std::apply(tuple_callback, *it);
+            higher_order_tuple_func(*it, cur_row_index++, tr_base_json);
         }
-        cur_row_index = 0;
         tr_base_json["status-code"] = 200;
     }
 
