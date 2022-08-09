@@ -24,7 +24,7 @@ void higher_order_tuple_func(std::tuple<types...>& tup, int& row_index, json& tr
     int column_index = 0;
     
     // capture column_index by reference so that it is changed (in this case, incremented) each time column_callback is called
-    auto column_callback = [&column_index, row_index](const auto& elem) {
+    auto column_callback = [&](const auto& elem) {
         tr_base_json["data"][row_index][column_index++] = elem;
     };
     
