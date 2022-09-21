@@ -1,4 +1,4 @@
-# Question 5 Solution
+# libpqxx JSON summary
 
 My additions to the repository consist of the new files include/pqxx/pqxx_json.hpp and src/pqxx_json.cpp, which implement conversions of several types of libpqxx result sets to C++ JSONs. The json data type in C++ has been excellently implemented by a third-party source at https://github.com/nlohmann/json and its interface works almost exactly like JSONs in JavaScript. Hence, I have decided to use this data type for C++ JSONs. This json data type is officially called nlohmann::json, which I can identify as "json" by writing "using json = nlohmann::json". The only file needed from that repository is the json.hpp file, which I have included in the "include" subdirectory in this repository.
 
